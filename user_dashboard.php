@@ -145,8 +145,8 @@ if ($time_stats_result) {
             <p><strong>Email:</strong> <?php echo htmlspecialchars($_SESSION['email']); ?></p>
             <p><strong>อายุ:</strong> <?php echo htmlspecialchars($_SESSION['age']); ?></p>
             <p><strong>ทะเบียนรถที่คุณลงทะเบียนไว้:</strong> <?php echo htmlspecialchars($_SESSION['car_registration']); ?></p>
-            <img src="./uploads/profile/<?php echo htmlspecialchars($_SESSION['car_registration']); ?>" class="rounded profile-img " width="120" height="120" alt="Profile Image">
-
+            <img src="./uploads/car/<?php echo htmlspecialchars($_SESSION['car_registration_img']); ?>" class="rounded profile-img " width="120" height="120" alt="Profile Image">
+            <a class="btn btn-success" href="user_edit.php?id=<?php echo $_SESSION['user_id']; ?>" > Edit</a>
         </div>
 
         <div class="card p-4 mb-4">

@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = pg_query_params($conn, $sql, [$firstName, $lastName, $email, $age, $carRegistration, $profileImage, $carImage, $userId]);
 
     if ($result) {
-        header('Location: admin_dashboard.php');
+        header('Location: user_dashboard.php');
         exit();
     } else {
         echo "Error updating user.";
