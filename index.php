@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'db.php'; // เรียกใช้งานการเชื่อมต่อจาก db.php
+require_once 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = $_POST['user_id'];
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['car_registration'] = $user['car_registration'];
         $_SESSION['car_registration_img'] = $user['car_registration_img'];
         $_SESSION['user_img'] = $user['user_img'];
-        
+
         // ตรวจสอบ role และพาไปยังแดชบอร์ดที่เหมาะสม
         if ($user['role'] == 'admin') {
             header("Location: admin_dashboard.php");
@@ -47,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
-            background: rgb(238, 174, 202);
             background: radial-gradient(circle, rgba(238, 174, 202, 1) 0%, rgba(148, 187, 233, 1) 100%);
             display: flex;
             flex-direction: column;
@@ -56,87 +55,91 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             min-height: 100vh;
             margin: 0;
         }
+        .navbar {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
         .login-container {
             background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            max-width: 100%;
-            width: 400px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            margin-top: 100px; /* เว้นระยะด้านบน */
         }
         .login-title {
             text-align: center;
-            margin-bottom: 20px;
-            font-weight: bold;
+            margin-bottom: 30px;
             color: #007bff;
+            font-weight: bold;
         }
-        .navbar {
-            
+        .form-control:focus {
+            border-color: #2575fc;
+            box-shadow: 0 0 8px rgba(38, 143, 255, 0.5);
         }
-        .navbar-brand, .nav-link {
-            color: #000!important;
+        .btn-primary {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            border: none;
         }
-        .form-label {
-            font-weight: 600;
+        .btn-primary:hover {
+            background: linear-gradient(to right, #2575fc, #6a11cb);
         }
-        @media (max-width: 576px) {
-            .login-container {
-                width: 100%;
-                padding: 20px;
-            }
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .alert {
+            margin-top: 20px;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">TrackCarsApplication</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container mt-5 pt-5">
-        <h1 class="text-center mb-4 text-white">Welcome To TrackCarsApplication</h1>
-        <div class="row justify-content-center">
-            <div class="login-container">
-                <h2 class="login-title">Login</h2>
-                <form action="index.php" method="POST">
-                    <div class="mb-3">
-                        <label for="user_id" class="form-label">User ID:</label>
-                        <input type="text" name="user_id" id="user_id" class="form-control" placeholder="Enter your User ID" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password:</label>
-                        <input type="password" name="password" id="password" class="form-control" placeholder="Enter your Password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
-                    <div class="text-center mt-3">
-                        <a href="register.php">สมัครสมาชิก?</a>
-                    </div>
-                </form>
-                <?php if (!empty($error)): ?>
-                    <div class="alert alert-danger mt-3" role="alert">
-                        <?php echo $error; ?>
-                    </div>
-                <?php endif; ?>
-            </div>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">TrackCarsApplication</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+     
         </div>
     </div>
+</nav>
+
+<!-- Login Form -->
+<div class="container d-flex align-items-center justify-content-center vh-100">
+    <div class="login-container">
+        <h2 class="login-title">Login</h2>
+        <form action="index.php" method="POST">
+            <div class="mb-3">
+                <label for="user_id" class="form-label">เลขบัตรประชาชน</label>
+                <input type="text" name="user_id" id="user_id" class="form-control" placeholder="กรุณากรอกเลขบัตรประชาชน" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">รหัสผ่าน:</label>
+                <input type="password" name="password" id="password" class="form-control" placeholder="กรุณากรอก รหัสผ่าน" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+            <a href="register.php" class="btn btn-secondary w-100">สมัครการใช้งาน</a>
+        </form>
+        <?php if (!empty($error)): ?>
+            <div class="alert alert-danger mt-3" role="alert">
+                <?php echo $error; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
 </body>
 </html>

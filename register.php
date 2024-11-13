@@ -1,73 +1,78 @@
 <?php
 session_start();
 require_once 'db.php';
+
+$error = '';
+$success = '';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // รับค่าจากฟอร์ม
     $user_id = $_POST['user_id'];
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
     $email = $_POST['email'];
-    $age = $_POST['age']; // รับค่าอายุ
-    $car_registration_number = $_POST['car_registration_number']; // รับค่าทะเบียนรถ
-    $role = 'user';
-    $user_img = null;
-    $car_registration_img = null;
+    $age = $_POST['age'];
+    $car_registration_number = $_POST['car_registration_number'];
 
-    // ตรวจสอบว่ารหัสผ่านและยืนยันรหัสผ่านตรงกันหรือไม่
+    // ตรวจสอบรหัสผ่านว่าตรงกันหรือไม่
     if ($password !== $confirm_password) {
         $error = "รหัสผ่านไม่ตรงกัน";
     } else {
-        // ตรวจสอบว่า user_id หรือ email ซ้ำหรือไม่
-        $check_sql = 'SELECT * FROM "User" WHERE user_id = $1 OR email = $2';
-        $check_result = pg_query_params($conn, $check_sql, array($user_id, $email));
-        if (pg_num_rows($check_result) > 0) {
-            $error = "User ID หรือ Email นี้ถูกใช้งานแล้ว";
-        } else {
-            // จัดการการอัปโหลดรูปโปรไฟล์
-            if (isset($_FILES['user_img']) && $_FILES['user_img']['error'] === UPLOAD_ERR_OK) {
-                $file_tmp = $_FILES['user_img']['tmp_name'];
-                $file_ext = strtolower(pathinfo($_FILES['user_img']['name'], PATHINFO_EXTENSION));
-                $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+        // ตรวจสอบและอัปโหลดรูปภาพโปรไฟล์
+        $user_img = '';
+        if (isset($_FILES['user_img']) && $_FILES['user_img']['error'] === UPLOAD_ERR_OK) {
+            $upload_dir = 'uploads/profile/';
+            $file_name = basename($_FILES['user_img']['name']);
+            $user_img = uniqid() . '_' . $file_name;
+            $target_file = $upload_dir . $user_img;
 
-                if (in_array($file_ext, $allowed_extensions)) {
-                    $user_img = 'uploads/profiles/' . uniqid('profile_', true) . '.' . $file_ext;
-                    move_uploaded_file($file_tmp, $user_img);
-                } else {
-                    $error = "รองรับเฉพาะไฟล์รูปภาพ (jpg, jpeg, png, gif) เท่านั้น";
-                }
+            // ตรวจสอบและย้ายไฟล์ไปยังโฟลเดอร์ uploads
+            if (!move_uploaded_file($_FILES['user_img']['tmp_name'], $target_file)) {
+                $error = "เกิดข้อผิดพลาดในการอัปโหลดรูปภาพโปรไฟล์";
             }
+        }
 
-            // จัดการการอัปโหลดรูปทะเบียนรถ
-            if (isset($_FILES['car_registration_img']) && $_FILES['car_registration_img']['error'] === UPLOAD_ERR_OK) {
-                $car_tmp = $_FILES['car_registration_img']['tmp_name'];
-                $car_ext = strtolower(pathinfo($_FILES['car_registration_img']['name'], PATHINFO_EXTENSION));
+        // ตรวจสอบและอัปโหลดรูปภาพป้ายทะเบียนรถ
+        $car_plate_img = '';
+        if (isset($_FILES['car_plate_img']) && $_FILES['car_plate_img']['error'] === UPLOAD_ERR_OK) {
+            $upload_dir = 'uploads/car/';
+            $file_name = basename($_FILES['car_plate_img']['name']);
+            $car_plate_img = uniqid() . '_' . $file_name;
+            $target_file = $upload_dir . $car_plate_img;
 
-                if (in_array($car_ext, $allowed_extensions)) {
-                    $car_registration_img = 'uploads/car_registrations/' . uniqid('car_', true) . '.' . $car_ext;
-                    move_uploaded_file($car_tmp, $car_registration_img);
-                } else {
-                    $error = "รองรับเฉพาะไฟล์รูปภาพ (jpg, jpeg, png, gif) เท่านั้น";
-                }
+            // ตรวจสอบและย้ายไฟล์ไปยังโฟลเดอร์ uploads
+            if (!move_uploaded_file($_FILES['car_plate_img']['tmp_name'], $target_file)) {
+                $error = "เกิดข้อผิดพลาดในการอัปโหลดรูปภาพป้ายทะเบียนรถ";
             }
+        }
 
-            // บันทึกข้อมูลผู้ใช้ใหม่ลงในฐานข้อมูล
-            if (empty($error)) {
-                $sql = 'INSERT INTO "User" (user_id, password, user_first_name, user_last_name, email, role, user_img, car_registration_img, age, car_registration) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
-                $result = pg_query_params($conn, $sql, array($user_id, $password, $first_name, $last_name, $email, $role, $user_img, $car_registration_img, $age, $car_registration_number));
+        // ถ้าไม่มีข้อผิดพลาด ให้บันทึกข้อมูลลงฐานข้อมูล
+        if (empty($error)) {
+            $sql = 'INSERT INTO "User" (user_id, password, user_first_name, user_last_name, email, age, car_registration, user_img, car_registration_img, role) 
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
+            $result = pg_query_params($conn, $sql, array(
+                $user_id,
+                $password,
+                $first_name,
+                $last_name,
+                $email,
+                $age,
+                $car_registration_number,
+                $user_img,
+                $car_plate_img,
+                'user'
+            ));
 
-                if ($result) {
-                    $success = "สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ";
-                    header("Location: index.php");
-                    exit();
-                } else {
-                    $error = "เกิดข้อผิดพลาดในการสมัครสมาชิก";
-                }
+            if ($result) {
+                $success = "สมัครสมาชิกสำเร็จ!";
+            } else {
+                $error = "ไม่สามารถสมัครสมาชิกได้ กรุณาลองใหม่";
             }
         }
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -79,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <style>
         body {
-            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -87,21 +92,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             padding: 20px;
         }
         .register-container {
-            background-color: #ffffff;
+            background-color: #fff;
             padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             max-width: 500px;
             width: 100%;
         }
         .register-title {
             text-align: center;
             margin-bottom: 30px;
-            color: #673ab7;
+            color: #6a11cb;
+            font-weight: bold;
         }
         .form-control:focus {
-            border-color: #673ab7;
-            box-shadow: 0 0 0 0.2rem rgba(103, 58, 183, 0.25);
+            border-color: #2575fc;
+            box-shadow: 0 0 8px rgba(38, 143, 255, 0.5);
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+        }
+        .alert {
+            margin-top: 20px;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -142,23 +159,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="car_registration_number" class="form-label">Car Registration Number:</label>
             <input type="text" name="car_registration_number" id="car_registration_number" class="form-control" required>
         </div>
-
         <div class="mb-3">
-            <label for="user_img" class="form-label">Profile Image:</label>
+            <label for="user_img" class="form-label">Profile Picture:</label>
             <input type="file" name="user_img" id="user_img" class="form-control">
         </div>
         <div class="mb-3">
-            <label for="car_registration_img" class="form-label">Car Registration Image:</label>
-            <input type="file" name="car_registration_img" id="car_registration_img" class="form-control">
+            <label for="car_plate_img" class="form-label">Car Plate Picture:</label>
+            <input type="file" name="car_plate_img" id="car_plate_img" class="form-control">
         </div>
-        <button type="submit" class="btn btn-primary w-100">Register</button>
+        <button type="submit" class="btn btn-primary w-100 mb-3">Register</button>
+        <a href="index.php" class="btn btn-secondary w-100">Back</a>
     </form>
 
-    <!-- แสดงข้อความแจ้งเตือน -->
     <?php if (!empty($error)): ?>
-        <div class="alert alert-danger mt-3"><?php echo $error; ?></div>
+        <div class="alert alert-danger"><?php echo $error; ?></div>
     <?php elseif (!empty($success)): ?>
-        <div class="alert alert-success mt-3"><?php echo $success; ?></div>
+        <div class="alert alert-success"><?php echo $success; ?></div>
     <?php endif; ?>
 </div>
 

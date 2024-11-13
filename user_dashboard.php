@@ -52,28 +52,74 @@ if ($time_stats_result) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
-            background: rgb(238,174,202);
-            background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
-            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%);
+            font-family: 'Poppins', sans-serif;
+            animation: fadeIn 1s ease-in-out;
         }
-        .navbar-brand, .nav-link {
-            color: #000 !important;
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
+
         .navbar {
-            margin-bottom: 20px;
+            background-color: #3A3D5F;
         }
+
+        .navbar-brand, .nav-link {
+            color: #FFFFFF !important;
+        }
+
+        .profile-img {
+            border: 3px solid #fff;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-img:hover {
+            transform: scale(1.1);
+        }
+
         .card {
-            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            background: #ffffff;
+            transition: transform 0.3s ease;
         }
-        .table-striped tbody tr:nth-child(odd) {
-            background-color: #f2f2f2;
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: #3A3D5F;
+        }
+
+        .list-group-item {
+            border: none;
+            background: #f9f9f9;
+        }
+
+        .table {
+            animation: slideIn 0.8s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            
             <a class="navbar-brand" href="#">TrackCarsApplication</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -81,50 +127,47 @@ if ($time_stats_result) {
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link active" href="dashboard.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
                 </ul>
-                <img src="<?php echo htmlspecialchars($user[0]['user_img']); ?>" class="rounded-circle" alt="Profile Image" width="40" height="40">
-                <h2 class="me-3"><?php echo htmlspecialchars($_SESSION['first_name']); ?></h2>
-                <a class="btn btn-danger" href="logout.php">Logout</a>
+                <div class="d-flex align-items-center">
+                    <img src="./uploads/profile/<?php echo htmlspecialchars($_SESSION['user_img']); ?>" class="rounded-circle profile-img me-2" width="50" height="50" alt="Profile Image">
+                    <h5 class="text-light me-3"><?php echo htmlspecialchars($_SESSION['first_name'])." " . htmlspecialchars($_SESSION['last_name']); ?></h5>
+                    <a class="btn btn-danger" href="logout.php">Logout</a>
+                </div>
             </div>
         </div>
     </nav>
 
-    <div class="container">
-        <!-- ข้อมูลส่วนตัวของผู้ใช้ -->
-        <div class="card">
-            <div class="card-body">
-                <h3 class="card-title">ข้อมูลผู้ใช้</h3>
-                <p><strong>Name:</strong> <?php echo htmlspecialchars($_SESSION['first_name']) . " " . htmlspecialchars($_SESSION['last_name']); ?></p>
-                <p><strong>Email:</strong> <?php echo htmlspecialchars($_SESSION['email']); ?></p>
-                <p><strong>Profile Image:</strong> <img src="./uploads/profile/<?php echo htmlspecialchars($user[0]['user_img']); ?>" class="rounded-circle" width="80" height="80" alt="User Image"></p>
-            </div>
+    <div class="container mt-5">
+        <div class="card p-4 mb-4">
+            <h3 class="card-title">ข้อมูลผู้ใช้</h3>
+            <img src="./uploads/profile/<?php echo htmlspecialchars($_SESSION['user_img']); ?>" class="rounded-circle profile-img me-2" width="120" height="120" alt="Profile Image">
+            <p><strong>ชื่อ:</strong> <?php echo htmlspecialchars($_SESSION['first_name']) . " " . htmlspecialchars($_SESSION['last_name']); ?></p>
+            <p><strong>Email:</strong> <?php echo htmlspecialchars($_SESSION['email']); ?></p>
+            <p><strong>อายุ:</strong> <?php echo htmlspecialchars($_SESSION['age']); ?></p>
+            <p><strong>ทะเบียนรถที่คุณลงทะเบียนไว้:</strong> <?php echo htmlspecialchars($_SESSION['car_registration']); ?></p>
+            <img src="./uploads/profile/<?php echo htmlspecialchars($_SESSION['car_registration']); ?>" class="rounded profile-img " width="120" height="120" alt="Profile Image">
+
         </div>
 
-        <!-- แสดงสถิติช่วงเวลาที่บันทึกบ่อยที่สุด -->
-        <div class="card mt-4">
-            <div class="card-body">
-                <h3 class="card-title">Most Frequent Record Times</h3>
-                <?php if (!empty($time_stats)) { ?>
-                    <ul class="list-group">
-                        <?php foreach ($time_stats as $stat) { ?>
-                            <li class="list-group-item">
-                                <strong>Time:</strong> <?php echo htmlspecialchars($stat['time']); ?>
-                                <br>
-                                <strong>Count:</strong> <?php echo htmlspecialchars($stat['count']); ?>
-                            </li>
-                        <?php } ?>
-                    </ul>
-                <?php } else { ?>
-                    <p>No record time statistics available.</p>
-                <?php } ?>
-            </div>
+        <div class="card p-4 mb-4">
+            <h3 class="card-title">Most Frequent Record Times</h3>
+            <?php if (!empty($time_stats)) { ?>
+                <ul class="list-group">
+                    <?php foreach ($time_stats as $stat) { ?>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><strong>Time:</strong> <?php echo htmlspecialchars($stat['time']); ?></span>
+                            <span class="badge bg-primary rounded-pill"><?php echo htmlspecialchars($stat['count']); ?></span>
+                        </li>
+                    <?php } ?>
+                </ul>
+            <?php } else { ?>
+                <p>No record time statistics available.</p>
+            <?php } ?>
         </div>
 
-        <!-- แสดงตารางการบันทึกเวลา -->
         <h4 class="text-center mt-4">บันทึกเวลาการเข้าออกของคุณ</h4>
-        <table class="table table-striped mt-3">
-            <thead>
+        <table class="table table-hover table-striped mt-3">
+            <thead class="table-dark">
                 <tr>
                     <th>Record ID</th>
                     <th>Time</th>
@@ -133,14 +176,13 @@ if ($time_stats_result) {
             </thead>
             <tbody>
                 <?php if (!empty($user)) {
-                    foreach ($user as $row) {
-                        ?>
+                    foreach ($user as $row) { ?>
                         <tr>
                             <td><?php echo htmlspecialchars($row['record_id']) ?></td>
-                            <td><?php echo htmlspecialchars($row['time']) ?> </td>
+                            <td><?php echo htmlspecialchars($row['time']) ?></td>
                             <td><?php echo htmlspecialchars($row['date']) ?></td>
                         </tr>
-                 <?php   }
+                    <?php }
                 } else {
                     echo "<tr><td colspan='3'>No records found.</td></tr>";
                 } ?>
