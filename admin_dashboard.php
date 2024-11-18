@@ -33,9 +33,74 @@ $user = pg_fetch_all($result);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        body {
-            background: rgb(238,174,202);
-            background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
+         body {
+                margin: auto;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                overflow: auto;
+                background: linear-gradient(315deg, rgba(101,0,94,1)3%, rgba(60,132,206,1) 38%, rgba(255,102,178,1) 68%,rgba(48,238,226,1) 98%);
+                animation: gradient 15s ease infinite;
+                background-size: 400% 400%;
+                background-attachment: fixed;
+        }
+
+            @keyframes gradient {
+                0% {
+                    background-position: 0% 0%;
+                }
+                50% {
+                    background-position: 100% 100%;
+                }
+                100% {
+                    background-position: 0% 0%;
+                }
+            }
+
+            .wave {
+                background: rgb(255 255 255 / 25%);
+                border-radius: 1000% 1000% 0 0;
+                position: fixed;
+                width: 200%;
+                height: 12em;
+                animation: wave 10s -3s linear infinite;
+                transform: translate3d(0, 0, 0);
+                opacity: 0.8;
+                bottom: 0;
+                left: 0;
+                z-index: -1;
+            }
+
+            .wave:nth-of-type(2) {
+                bottom: -1.25em;
+                animation: wave 18s linear reverse infinite;
+                opacity: 0.8;
+            }
+
+            .wave:nth-of-type(3) {
+                bottom: -2.5em;
+                animation: wave 20s -1s reverse infinite;
+                opacity: 0.9;
+            }
+
+            @keyframes wave {
+                2% {
+                    transform: translateX(1);
+                }
+
+                25% {
+                    transform: translateX(-25%);
+                }
+
+                50% {
+                    transform: translateX(-50%);
+                }
+
+                75% {
+                    transform: translateX(-25%);
+                }
+
+                100% {
+                    transform: translateX(1);
+                }
         }
         .navbar-brand {
             font-weight: bold;
@@ -62,9 +127,15 @@ $user = pg_fetch_all($result);
             background-color: #28a745;
             border: none;
         }
+
     </style>
 </head>
 <body>
+    <div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">TrackCarsApplication</a>
@@ -73,9 +144,9 @@ $user = pg_fetch_all($result);
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="dashboard.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-                    <li class="nav-item"><a class="nav-link disabled">Disabled</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="dashboard.php"></a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"></a></li>
+                    <li class="nav-item"><a class="nav-link disabled"></a></li>
                 </ul>
                 <span class="navbar-text me-3 text-white">
                     Welcome, ADMIN: <?php echo htmlspecialchars($_SESSION['first_name']); ?>
@@ -137,5 +208,6 @@ $user = pg_fetch_all($result);
             </table>
         </div>
     </div>
+    
 </body>
 </html>

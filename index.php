@@ -45,7 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Login | TrackCarsApplication</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Dragon Cursor Effect</title>
+
     <style>
+        /*::after
         body {
             background: radial-gradient(circle, rgba(238, 174, 202, 1) 0%, rgba(148, 187, 233, 1) 100%);
             display: flex;
@@ -54,7 +57,82 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-        }
+        }*/
+
+        body {
+                margin: auto;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                overflow: auto;
+                background: linear-gradient(315deg, rgba(101,0,94,1)3%, rgba(60,132,206,1) 38%, rgba(255,102,178,1) 68%,rgba(48,238,226,1) 98%);
+                animation: gradient 15s ease infinite;
+                background-size: 400% 400%;
+                background-attachment: fixed;
+            }
+
+            @keyframes gradient {
+                0% {
+                    background-position: 0% 0%;
+                }
+                50% {
+                    background-position: 100% 100%;
+                }
+                100% {
+                    background-position: 0% 0%;
+                }
+            }
+
+            .wave {
+                background: rgb(255 255 255 / 25%);
+                border-radius: 1000% 1000% 0 0;
+                position: fixed;
+                width: 200%;
+                height: 12em;
+                animation: wave 10s -3s linear infinite;
+                transform: translate3d(0, 0, 0);
+                opacity: 0.8;
+                bottom: 0;
+                left: 0;
+                z-index: -1;
+            }
+
+            .wave:nth-of-type(2) {
+                bottom: -1.25em;
+                animation: wave 18s linear reverse infinite;
+                opacity: 0.8;
+            }
+
+            .wave:nth-of-type(3) {
+                bottom: -2.5em;
+                animation: wave 20s -1s reverse infinite;
+                opacity: 0.9;
+            }
+
+            @keyframes wave {
+                2% {
+                    transform: translateX(1);
+                }
+
+                25% {
+                    transform: translateX(-25%);
+                }
+
+                50% {
+                    transform: translateX(-50%);
+                }
+
+                75% {
+                    transform: translateX(-25%);
+                }
+
+                100% {
+                    transform: translateX(1);
+                }
+            }
+
+
+
+
+        
         .navbar {
             width: 100%;
             position: fixed;
@@ -77,6 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             margin-bottom: 30px;
             color: #007bff;
             font-weight: bold;
+            
         }
         .form-control:focus {
             border-color: #2575fc;
@@ -100,46 +179,85 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             margin-top: 20px;
             border-radius: 8px;
         }
+        .welcome{
+            color: #ffffff;
+        }
+        .car {
+            color:aliceblue;
+            margin-top: 60px;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 4px solid #ffffff;
+            width: 0;
+            animation: typing 3s steps(30) 1s forwards, blink 0.25s step-end infinite;
+        }
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+        @keyframes blink {
+            50% {
+                border-color: transparent;
+            }
+        }
     </style>
 </head>
 <body>
+    <div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">TrackCarsApplication</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-     
+    <!-- แสดงข้อความแอนิเมชัน -->
+    <div class="container d-flex align-items-center justify-content-center vh-100">
+        <center>
+            <h1 class="welcome fw-bold">Welcome to </h1>
+            <h1 class="car mt-5">TrackCars Application</h1>
+        </center>
+    </div>
+
+    <!-- ฟอร์มล็อกอิน -->
+    <div class="container d-flex align-items-center justify-content-center vh-100 mb-5" id="loginForm">
+        <div class="login-container">
+            <h2 class="login-title">Login</h2>
+            <form action="index.php" method="POST">
+                <div class="mb-3">
+                    <label for="user_id" class="form-label">เลขบัตรประชาชน</label>
+                    <input type="text" name="user_id" id="user_id" class="form-control" placeholder="กรุณากรอกเลขบัตรประชาชน" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">รหัสผ่าน:</label>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="กรุณากรอก รหัสผ่าน" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-3" id="liveAlertBtn">Login</button>
+                <a href="register.php" class="btn btn-secondary w-100">สมัครการใช้งาน</a>
+            </form>
+            <?php if (!empty($error)): ?>
+                <div class="alert alert-danger mt-3" role="alert">
+                    <?php echo $error; ?>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
-</nav>
+    
+    <script>
+        // ใช้ setTimeout เพื่อเลื่อนหน้าไปยังฟอร์มล็อกอินเมื่อแอนิเมชันเสร็จ
+        setTimeout(function() {
+            // เลื่อนหน้ามาที่ฟอร์มล็อกอินหลังจากแอนิเมชันเสร็จ (3 วินาที)
+            document.getElementById('loginForm').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }, 5000); // ระยะเวลา 3000 มิลลิวินาที (3 วินาที)
 
-<!-- Login Form -->
-<div class="container d-flex align-items-center justify-content-center vh-100">
-    <div class="login-container">
-        <h2 class="login-title">Login</h2>
-        <form action="index.php" method="POST">
-            <div class="mb-3">
-                <label for="user_id" class="form-label">เลขบัตรประชาชน</label>
-                <input type="text" name="user_id" id="user_id" class="form-control" placeholder="กรุณากรอกเลขบัตรประชาชน" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">รหัสผ่าน:</label>
-                <input type="password" name="password" id="password" class="form-control" placeholder="กรุณากรอก รหัสผ่าน" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
-            <a href="register.php" class="btn btn-secondary w-100">สมัครการใช้งาน</a>
-        </form>
-        <?php if (!empty($error)): ?>
-            <div class="alert alert-danger mt-3" role="alert">
-                <?php echo $error; ?>
-            </div>
-        <?php endif; ?>
-    </div>
-</div>
+
+        
+    </script>
 
 </body>
 </html>
